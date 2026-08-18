@@ -2,12 +2,16 @@ import { useState } from "react";
 import articleDog from "../../assets/article-dog.jpg";
 import articleLake from "../../assets/article-lake.jpg";
 import articleMoose from "../../assets/article-moose.jpg";
-import Footer from "../Footer/Footer.jsx";
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
+import Footer from "../Footer/Footer.jsx";
 import "./App.css";
 
 function App() {
+  const [isLoading] = useState(false);
+  const [searchError] = useState(false);
+  const [hasSearched] = useState(true);
+
   const [articles] = useState([
     {
       image: articleDog,
@@ -44,7 +48,12 @@ function App() {
   return (
     <div className="page">
       <Header />
-      <Main articles={articles} />
+      <Main
+        articles={articles}
+        isLoading={isLoading}
+        searchError={searchError}
+        hasSearched={hasSearched}
+      />
       <Footer />
     </div>
   );

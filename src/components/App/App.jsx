@@ -1,13 +1,21 @@
 import { useState } from "react";
+
 import articleDog from "../../assets/article-dog.jpg";
 import articleLake from "../../assets/article-lake.jpg";
 import articleMoose from "../../assets/article-moose.jpg";
+
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
 import Footer from "../Footer/Footer.jsx";
+
+import LoginModal from "../LoginModal/LoginModal.jsx";
+import RegisterModal from "../RegisterModal/RegisterModal.jsx";
+import RegistrationSuccessModal from "../RegistrationSuccessModal/RegistrationSuccessModal.jsx";
+
 import "./App.css";
 
 function App() {
+  const [activeModal, setActiveModal] = useState(null);
   const [isLoading] = useState(false);
   const [searchError] = useState(false);
   const [hasSearched] = useState(true);
@@ -45,9 +53,30 @@ function App() {
     },
   ]);
 
+  function handleOpenLogin() {
+    setActiveModal("login");
+  }
+
+  function handleOpenRegister() {
+    setActiveModal("register");
+  }
+
+  function handleCloseModal() {
+    setActiveModal(null);
+  }
+
+  function handleLoginSubmit(event) {
+    event.preventDefault();
+  }
+
+  function handleRegisterSubmit(event) {
+    event.preventDefault();
+    setActiveModal("success");
+  }
+
   return (
     <div className="page">
-      <Header />
+      <Header onSignInClick={handleOpenLogin} />
       <Main
         articles={articles}
         isLoading={isLoading}
@@ -55,6 +84,29 @@ function App() {
         hasSearched={hasSearched}
       />
       <Footer />
+
+      {activeModal === "login" && (
+        <LoginModal
+          onClose={handleCloseModal}
+          onSubmit={handleLoginSubmit}
+          onSwitchModal={handleOpenRegister}
+        />
+      )}
+
+      {activeModal === "register" && (
+        <RegisterModal
+          onClose={handleCloseModal}
+          onSubmit={handleRegisterSubmit}
+          onSwitchModal={handleOpenLogin}
+        />
+      )}
+
+      {activeModal === "success" && (
+        <RegistrationSuccessModal
+          onClose={handleCloseModal}
+          onSignInClick={handleOpenLogin}
+        />
+      )}
     </div>
   );
 }

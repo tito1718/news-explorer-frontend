@@ -1,22 +1,61 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./Navigation.css";
 
-function Navigation() {
+function Navigation({ onSignInClick }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   function handleMenuToggle() {
     setIsMenuOpen(!isMenuOpen);
   }
 
-  function handleHomeClick() {
+  function handleMenuClose() {
     setIsMenuOpen(false);
   }
+
+  function handleHomeClick() {
+    handleMenuClose();
+  }
+
+  function handleSignInClick() {
+    handleMenuClose();
+    onSignInClick();
+  }
+
+  useEffect(() => {
+    if (!isMenuOpen) {
+      return undefined;
+    }
+
+    function handleEscapeKey(event) {
+      if (event.key === "Escape") {
+        if (document.activeElement instanceof HTMLElement) {
+          document.activeElement.blur();
+        }
+
+        setIsMenuOpen(false);
+      }
+    }
+
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, [isMenuOpen]);
 
   return (
     <nav
       className={`navigation ${isMenuOpen ? "navigation_menu_open" : ""}`}
       aria-label="Main navigation"
     >
+      {isMenuOpen && (
+        <button
+          className="navigation__overlay"
+          type="button"
+          aria-label="Close navigation menu"
+          onClick={handleMenuClose}
+        />
+      )}
       <a className="navigation__logo" href="/">
         NewsExplorer
       </a>
@@ -31,7 +70,11 @@ function Navigation() {
           Home
         </a>
 
-        <button className="navigation__signin-button" type="button">
+        <button
+          className="navigation__signin-button"
+          type="button"
+          onClick={handleSignInClick}
+        >
           Sign in
         </button>
       </div>

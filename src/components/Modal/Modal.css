@@ -1,0 +1,88 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  background-color: rgb(0 0 0 / 50%);
+}
+
+.modal__container {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  padding: 34px 36px 28px;
+  border-radius: 16px;
+  background-color: #fff;
+}
+
+.modal__close-button {
+  position: absolute;
+  top: -46px;
+  right: -46px;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+}
+
+.modal__close-button::before,
+.modal__close-button::after {
+  position: absolute;
+  top: 19px;
+  left: 8px;
+  width: 24px;
+  height: 2px;
+  background-color: #fff;
+  content: "";
+}
+
+.modal__close-button::before {
+  transform: rotate(45deg);
+}
+
+.modal__close-button::after {
+  transform: rotate(-45deg);
+}
+
+.modal__close-button:hover {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.modal__close-button:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal__close-button {
+    transition: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .modal {
+    align-items: flex-end;
+    padding: 56px 0 0;
+  }
+
+  .modal__container {
+    max-width: none;
+    min-height: calc(100vh - 56px);
+    padding: 16px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  .modal__close-button {
+    top: -48px;
+    right: 16px;
+  }
+}

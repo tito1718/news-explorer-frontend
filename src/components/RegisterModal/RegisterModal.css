@@ -1,0 +1,33 @@
+.register-modal__label {
+  margin: 0 0 8px;
+  color: #2f71e5;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 15px;
+}
+
+.register-modal__label:not(:first-of-type) {
+  margin-top: 13px;
+}
+
+.register-modal__input {
+  width: 100%;
+  padding: 0 0 10px;
+  border: 0;
+  border-bottom: 1px solid rgb(0 0 0 / 20%);
+  border-radius: 0;
+  background-color: transparent;
+  color: #000;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.register-modal__input::placeholder {
+  color: rgb(0 0 0 / 20%);
+}
+
+.register-modal__input:focus {
+  border-bottom-color: #000;
+  outline: none;
+}

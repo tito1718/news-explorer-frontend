@@ -1,0 +1,34 @@
+.modal__container_type_success {
+  padding: 43px 36px 51px;
+}
+
+.registration-success__title {
+  max-width: 315px;
+  margin: 0 0 14px;
+  color: #1a1b22;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 28px;
+}
+
+.registration-success__signin-button {
+  padding: 0;
+  border: 0;
+  background-color: transparent;
+  color: #2f71e5;
+  font-family: "Inter", Arial, sans-serif;
+  font-size: 18px;
+  line-height: 22px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.registration-success__signin-button:hover {
+  opacity: 0.7;
+}
+
+.registration-success__signin-button:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 3px;
+}

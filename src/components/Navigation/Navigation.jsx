@@ -1,11 +1,20 @@
 import { useEffect, useState } from "react";
+import { Link, NavLink } from "react-router";
+import logoutIcon from "../../assets/logout.svg";
+import logoutWhiteIcon from "../../assets/logout-white.svg";
 import "./Navigation.css";
 
-function Navigation({ onSignInClick }) {
+function Navigation({
+  onSignInClick,
+  onSignOutClick,
+  isLoggedIn = false,
+  userName = "Elise",
+  theme = "dark",
+}) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   function handleMenuToggle() {
-    setIsMenuOpen(!isMenuOpen);
+    setIsMenuOpen((currentValue) => !currentValue);
   }
 
   function handleMenuClose() {
@@ -18,7 +27,18 @@ function Navigation({ onSignInClick }) {
 
   function handleSignInClick() {
     handleMenuClose();
-    onSignInClick();
+
+    if (onSignInClick) {
+      onSignInClick();
+    }
+  }
+
+  function handleSignOutClick() {
+    handleMenuClose();
+
+    if (onSignOutClick) {
+      onSignOutClick();
+    }
   }
 
   useEffect(() => {
@@ -45,7 +65,11 @@ function Navigation({ onSignInClick }) {
 
   return (
     <nav
-      className={`navigation ${isMenuOpen ? "navigation_menu_open" : ""}`}
+      className={`navigation ${
+        isLoggedIn ? "navigation_logged_in" : ""
+      } navigation_theme_${theme} ${
+        isMenuOpen ? "navigation_menu_open" : ""
+      }`.trim()}
       aria-label="Main navigation"
     >
       {isMenuOpen && (
@@ -56,27 +80,62 @@ function Navigation({ onSignInClick }) {
           onClick={handleMenuClose}
         />
       )}
-      <a className="navigation__logo" href="/">
+      <Link className="navigation__logo" to="/" onClick={handleHomeClick}>
         NewsExplorer
-      </a>
+      </Link>
 
       <div className="navigation__links">
-        <a
-          className="navigation__link navigation__link_active"
-          href="/"
-          aria-current="page"
+        <NavLink
+          className={({ isActive }) =>
+            `navigation__link ${
+              isActive ? "navigation__link_active" : ""
+            }`.trim()
+          }
+          to="/"
+          end
           onClick={handleHomeClick}
         >
           Home
-        </a>
+        </NavLink>
 
-        <button
-          className="navigation__signin-button"
-          type="button"
-          onClick={handleSignInClick}
-        >
-          Sign in
-        </button>
+        {isLoggedIn && (
+          <NavLink
+            className={({ isActive }) =>
+              `navigation__link ${
+                isActive ? "navigation__link_active" : ""
+              }`.trim()
+            }
+            to="/saved-news"
+            onClick={handleMenuClose}
+          >
+            Saved articles
+          </NavLink>
+        )}
+
+        {isLoggedIn ? (
+          <button
+            className="navigation__user-button"
+            type="button"
+            aria-label={`Sign out ${userName}`}
+            onClick={handleSignOutClick}
+          >
+            <span>{userName}</span>
+            <img
+              className="navigation__logout-icon"
+              src={theme === "light" ? logoutIcon : logoutWhiteIcon}
+              alt=""
+              aria-hidden="true"
+            />
+          </button>
+        ) : (
+          <button
+            className="navigation__signin-button"
+            type="button"
+            onClick={handleSignInClick}
+          >
+            Sign in
+          </button>
+        )}
       </div>
 
       <button

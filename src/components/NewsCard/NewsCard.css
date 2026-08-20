@@ -53,6 +53,73 @@
   background-image: url("../../assets/bookmark-marked.svg");
 }
 
+.news-card__keyword {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  max-width: calc(100% - 112px);
+  overflow: hidden;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #1a1b22;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 24px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.news-card__delete-button {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent url("../../assets/trashcan-light.svg") center /
+    contain no-repeat;
+  cursor: pointer;
+}
+
+.news-card__delete-button:hover {
+  background-image: url("../../assets/trashcan-dark.svg");
+}
+
+.news-card__delete-button:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 2px;
+}
+
+.news-card__delete-control {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.news-card__delete-tooltip {
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #1a1b22;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.news-card__delete-control:hover .news-card__delete-tooltip,
+.news-card__delete-control:focus-within .news-card__delete-tooltip {
+  opacity: 1;
+}
+
 .news-card__content {
   display: flex;
   flex-grow: 1;
@@ -65,7 +132,7 @@
 .news-card__date {
   margin: 0;
   color: #b6bcbf;
-  font-family: "Source Sans 3", Arial, sans-serif;
+  font-family: "Roboto", Arial, sans-serif;
   font-size: 18px;
   line-height: 24px;
 }
@@ -102,6 +169,7 @@
   font-size: 16px;
   line-height: 22px;
   -webkit-box-orient: vertical;
+  line-clamp: 4;
   -webkit-line-clamp: 4;
 }
 
@@ -133,6 +201,20 @@
     right: 8px;
   }
 
+  .news-card__keyword {
+    top: 8px;
+    left: 8px;
+  }
+
+  .news-card__delete-control {
+    top: 8px;
+    right: 8px;
+  }
+
+  .news-card__delete-tooltip {
+    display: none;
+  }
+
   .news-card__content {
     padding: 16px;
   }
@@ -144,6 +226,7 @@
   }
 
   .news-card__description {
+    line-clamp: 3;
     -webkit-line-clamp: 3;
   }
 }
@@ -155,6 +238,16 @@
 
   .news-card__image-container {
     height: 196px;
+  }
+
+  .news-card__keyword {
+    top: 16px;
+    left: 16px;
+  }
+
+  .news-card__delete-control {
+    top: 16px;
+    right: 16px;
   }
 
   .news-card__content {

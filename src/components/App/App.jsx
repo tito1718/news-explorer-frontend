@@ -1,11 +1,15 @@
 import { useState } from "react";
+import { Route, Routes } from "react-router";
 
 import articleDog from "../../assets/article-dog.jpg";
 import articleLake from "../../assets/article-lake.jpg";
 import articleMoose from "../../assets/article-moose.jpg";
+import articleYellowstone from "../../assets/article-yellowstone.jpg";
+import articlePolaris from "../../assets/article-polaris.jpg";
 
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
+import SavedNews from "../SavedNews/SavedNews.jsx";
 import Footer from "../Footer/Footer.jsx";
 
 import LoginModal from "../LoginModal/LoginModal.jsx";
@@ -23,6 +27,7 @@ function App() {
   const [articles] = useState([
     {
       image: articleDog,
+      keyword: "Nature",
       publishedAt: "2020-11-04",
       date: "November 4, 2020",
       title: "Everyone Needs a Special 'Sit Spot' in Nature",
@@ -33,6 +38,7 @@ function App() {
     },
     {
       image: articleLake,
+      keyword: "Nature",
       publishedAt: "2019-02-19",
       date: "February 19, 2019",
       title: "Nature makes you better",
@@ -42,7 +48,19 @@ function App() {
       url: "https://www.nationalgeographic.com/",
     },
     {
+      image: articleYellowstone,
+      keyword: "Yellowstone",
+      publishedAt: "2020-10-19",
+      date: "October 19, 2020",
+      title: "Nostalgic Photos of Tourists in U.S. National Parks",
+      description:
+        "Uri and Helle Golman are National Geographic Explorers and conservation photographers who completed a project and book they call their love letter to nature.",
+      source: "National Geographic",
+      url: "https://www.nationalgeographic.com/",
+    },
+    {
       image: articleMoose,
+      keyword: "Parks",
       publishedAt: "2020-10-19",
       date: "October 19, 2020",
       title: "Grand Teton Renews Historic Crest Trail",
@@ -50,6 +68,17 @@ function App() {
         "The linking together of the Cascade and Death Canyon trails, at their heads, took place on October 1, 1933, and marked the first step in the realization of a plan whereby the hiker will be able to visit the most scenic areas.",
       source: "National Parks Traveler",
       url: "https://www.nationalparkstraveler.org/",
+    },
+    {
+      image: articlePolaris,
+      keyword: "Photography",
+      publishedAt: "2020-03-16",
+      date: "March 16, 2020",
+      title: "Scientists Don't Know Why Polaris Is So Weird",
+      description:
+        "Humans have long relied on the starry sky to explore new frontiers, sail to the edge of the world, and find their way back home. Even animals look to the stars to guide them.",
+      source: "Treehugger",
+      url: "https://www.treehugger.com/",
     },
   ]);
 
@@ -76,14 +105,24 @@ function App() {
 
   return (
     <div className="page">
-      <Header onSignInClick={handleOpenLogin} />
-      <Main
-        articles={articles}
-        isLoading={isLoading}
-        searchError={searchError}
-        hasSearched={hasSearched}
-      />
-      <Footer />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <>
+              <Header onSignInClick={handleOpenLogin} />
+              <Main
+                articles={articles}
+                isLoading={isLoading}
+                searchError={searchError}
+                hasSearched={hasSearched}
+              />
+              <Footer />
+            </>
+          }
+        />
+        <Route path="/saved-news" element={<SavedNews articles={articles} />} />
+      </Routes>
 
       {activeModal === "login" && (
         <LoginModal

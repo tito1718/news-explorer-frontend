@@ -1,3 +1,4 @@
+import { Link } from "react-router";
 import githubIcon from "../../assets/github.svg";
 import linkedinIcon from "../../assets/linkedin.svg";
 import "./Footer.css";
@@ -13,9 +14,9 @@ function Footer() {
 
       <div className="footer__content">
         <nav className="footer__links" aria-label="Footer navigation">
-          <a className="footer__link" href="/">
+          <Link className="footer__link" to="/">
             Home
-          </a>
+          </Link>
 
           <a
             className="footer__link"

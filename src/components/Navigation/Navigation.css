@@ -20,6 +20,7 @@
   font-weight: 700;
   line-height: 24px;
   text-decoration: none;
+  transition: opacity 0.2s ease;
 }
 
 .navigation__links {
@@ -40,6 +41,12 @@
   font-weight: 500;
   line-height: 24px;
   text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.navigation__logo:hover,
+.navigation__link:hover {
+  opacity: 0.7;
 }
 
 .navigation__link_active::after {
@@ -48,7 +55,7 @@
   bottom: -1px;
   left: 0;
   height: 3px;
-  background-color: #fff;
+  background-color: currentcolor;
   content: "";
 }
 
@@ -75,11 +82,50 @@
   color: #1a1b22;
 }
 
+.navigation__user-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 112px;
+  height: 48px;
+  padding: 0 18px;
+  border: 1px solid currentcolor;
+  border-radius: 100px;
+  background-color: transparent;
+  color: #fff;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 24px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.navigation__user-button:hover {
+  opacity: 0.7;
+}
+
+.navigation__logout-icon {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
 .navigation__logo:focus-visible,
-.navigation__link:focus-visible,
+.navigation__link:focus-visible {
+  outline: 2px solid currentcolor;
+  outline-offset: 4px;
+}
+
 .navigation__signin-button:focus-visible {
   outline: 2px solid #fff;
-  outline-offset: 4px;
+  outline-offset: 0;
+}
+
+.navigation__user-button:focus-visible {
+  outline: 2px solid #2f71e5;
+  outline-offset: 3px;
 }
 
 .navigation__menu-button {
@@ -111,6 +157,20 @@
   transition: transform 0.2s ease;
 }
 
+.navigation_theme_light {
+  border-bottom-color: #d1d2d6;
+}
+
+.navigation_theme_light .navigation__logo,
+.navigation_theme_light .navigation__link,
+.navigation_theme_light .navigation__user-button {
+  color: #1a1b22;
+}
+
+.navigation_theme_light .navigation__menu-line {
+  background-color: #1a1b22;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .navigation__menu-button,
   .navigation__menu-line {
@@ -134,6 +194,11 @@
 
   .navigation__signin-button {
     min-width: 152px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  .navigation__user-button {
     height: 40px;
     font-size: 16px;
   }
@@ -175,6 +240,10 @@
     background-color: #1a1b22;
   }
 
+  .navigation_logged_in.navigation_menu_open {
+    height: 300px;
+  }
+
   .navigation_menu_open .navigation__overlay {
     position: fixed;
     top: 230px;
@@ -187,6 +256,10 @@
     border: 0;
     background-color: rgb(0 0 0 / 50%);
     cursor: default;
+  }
+
+  .navigation_logged_in.navigation_menu_open .navigation__overlay {
+    top: 300px;
   }
 
   .navigation_menu_open .navigation__logo {
@@ -211,9 +284,14 @@
     border-top: 1px solid rgb(255 255 255 / 20%);
   }
 
+  .navigation_logged_in.navigation_menu_open .navigation__links {
+    height: 244px;
+  }
+
   .navigation_menu_open .navigation__link {
     display: block;
     height: auto;
+    color: #fff;
     font-size: 18px;
   }
 
@@ -221,10 +299,15 @@
     display: none;
   }
 
-  .navigation_menu_open .navigation__signin-button {
+  .navigation_menu_open .navigation__signin-button,
+  .navigation_menu_open .navigation__user-button {
     width: 100%;
     height: 56px;
     font-size: 18px;
+  }
+
+  .navigation_menu_open .navigation__user-button {
+    color: #fff;
   }
 
   .navigation_menu_open .navigation__menu-line:first-child {
@@ -233,5 +316,13 @@
 
   .navigation_menu_open .navigation__menu-line:last-child {
     transform: translateY(-3.5px) rotate(-45deg);
+  }
+
+  .navigation_theme_light.navigation_menu_open .navigation__logo {
+    color: #fff;
+  }
+
+  .navigation_theme_light.navigation_menu_open .navigation__menu-line {
+    background-color: #fff;
   }
 }

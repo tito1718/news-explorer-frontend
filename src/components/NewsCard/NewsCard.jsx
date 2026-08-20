@@ -1,6 +1,6 @@
 import "./NewsCard.css";
 
-function NewsCard({ article }) {
+function NewsCard({ article, isSaved = false }) {
   return (
     <article className="news-card">
       <div className="news-card__image-container">
@@ -10,11 +10,31 @@ function NewsCard({ article }) {
           alt={article.title}
         />
 
-        <button
-          className="news-card__save-button"
-          type="button"
-          aria-label="Save article"
-        />
+        {isSaved ? (
+          <>
+            <span className="news-card__keyword">
+              {article.keyword || "Nature"}
+            </span>
+
+            <div className="news-card__delete-control">
+              <span className="news-card__delete-tooltip">
+                Remove from saved
+              </span>
+
+              <button
+                className="news-card__delete-button"
+                type="button"
+                aria-label={`Remove ${article.title} from saved articles`}
+              />
+            </div>
+          </>
+        ) : (
+          <button
+            className="news-card__save-button"
+            type="button"
+            aria-label={`Save ${article.title}`}
+          />
+        )}
       </div>
 
       <div className="news-card__content">

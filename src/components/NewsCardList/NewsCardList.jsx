@@ -6,6 +6,10 @@ function NewsCardList({
   title = "Search results",
   showMoreButton = true,
   isSavedList = false,
+  onDeleteArticle,
+  savedArticles = [],
+  isLoggedIn = false,
+  onSaveArticle,
 }) {
   return (
     <section className="news-card-list" aria-label={title || "Saved articles"}>
@@ -14,9 +18,15 @@ function NewsCardList({
       <div className="news-card-list__grid">
         {articles.map((article) => (
           <NewsCard
-            key={`${article.url}-${article.title}`}
+            key={article.id}
             article={article}
             isSaved={isSavedList}
+            isBookmarked={savedArticles.some(
+              (savedArticle) => savedArticle.id === article.id,
+            )}
+            isLoggedIn={isLoggedIn}
+            onSaveArticle={onSaveArticle}
+            onDeleteArticle={onDeleteArticle}
           />
         ))}
       </div>

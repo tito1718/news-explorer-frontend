@@ -15,7 +15,7 @@ This project is being developed as the final project for the TripleTen Web Devel
 - Saved article card design
 - Loading, empty-result, and request-error states
 
-The current article content is temporary sample data. News API integration and simulated authentication will be added in the next development stages.
+The current article content is temporary sample data. Authentication and saved-article behavior are simulated in the frontend using localStorage. News API integration will be added in the next development stage.
 
 ## Technologies
 

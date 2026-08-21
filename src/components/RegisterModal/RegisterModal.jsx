@@ -13,6 +13,11 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
   const { values, errors, isValid, handleChange } =
     useFormWithValidation(initialValues);
 
+  function handleSubmit(event) {
+    event.preventDefault();
+    onSubmit(values);
+  }
+
   return (
     <ModalWithForm
       name="register"
@@ -22,7 +27,7 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
       alternativeText="or"
       alternativeButtonText="Sign in"
       onClose={onClose}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       onAlternativeClick={onSwitchModal}
     >
       <label className="register-modal__label" htmlFor="register-email">

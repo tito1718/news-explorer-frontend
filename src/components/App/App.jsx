@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Route, Routes } from "react-router";
+import { useEffect, useState } from "react";
+import { Navigate, Route, Routes } from "react-router";
 
 import articleDog from "../../assets/article-dog.jpg";
 import articleLake from "../../assets/article-lake.jpg";
@@ -18,14 +18,74 @@ import RegistrationSuccessModal from "../RegistrationSuccessModal/RegistrationSu
 
 import "./App.css";
 
+const simulatedUser = {
+  name: "Tito",
+};
+
+const registeredUserStorageKey = "newsExplorerRegisteredUser";
+const tokenStorageKey = "newsExplorerToken";
+const userStorageKey = "newsExplorerUser";
+const savedArticlesStorageKey = "newsExplorerSavedArticles";
+
+function getStoredUser() {
+  const savedToken = localStorage.getItem(tokenStorageKey);
+  const savedUser = localStorage.getItem(userStorageKey);
+
+  if (!savedToken || !savedUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(savedUser);
+  } catch {
+    localStorage.removeItem(tokenStorageKey);
+    localStorage.removeItem(userStorageKey);
+    return null;
+  }
+}
+
+function getStoredArticles(defaultArticles) {
+  const storedArticles = localStorage.getItem(savedArticlesStorageKey);
+
+  if (!storedArticles) {
+    return defaultArticles;
+  }
+
+  try {
+    return JSON.parse(storedArticles);
+  } catch {
+    localStorage.removeItem(savedArticlesStorageKey);
+    return defaultArticles;
+  }
+}
+
+function getRegisteredUser() {
+  const savedRegisteredUser = localStorage.getItem(registeredUserStorageKey);
+
+  if (!savedRegisteredUser) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(savedRegisteredUser);
+  } catch {
+    localStorage.removeItem(registeredUserStorageKey);
+    return null;
+  }
+}
+
 function App() {
   const [activeModal, setActiveModal] = useState(null);
+  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [registeredUser, setRegisteredUser] = useState(getRegisteredUser);
+  const isLoggedIn = currentUser !== null;
   const [isLoading] = useState(false);
   const [searchError] = useState(false);
   const [hasSearched] = useState(true);
 
   const [articles] = useState([
     {
+      id: 1,
       image: articleDog,
       keyword: "Nature",
       publishedAt: "2020-11-04",
@@ -37,6 +97,7 @@ function App() {
       url: "https://www.treehugger.com/",
     },
     {
+      id: 2,
       image: articleLake,
       keyword: "Nature",
       publishedAt: "2019-02-19",
@@ -48,6 +109,7 @@ function App() {
       url: "https://www.nationalgeographic.com/",
     },
     {
+      id: 3,
       image: articleYellowstone,
       keyword: "Yellowstone",
       publishedAt: "2020-10-19",
@@ -59,6 +121,7 @@ function App() {
       url: "https://www.nationalgeographic.com/",
     },
     {
+      id: 4,
       image: articleMoose,
       keyword: "Parks",
       publishedAt: "2020-10-19",
@@ -70,6 +133,7 @@ function App() {
       url: "https://www.nationalparkstraveler.org/",
     },
     {
+      id: 5,
       image: articlePolaris,
       keyword: "Photography",
       publishedAt: "2020-03-16",
@@ -81,6 +145,16 @@ function App() {
       url: "https://www.treehugger.com/",
     },
   ]);
+  const [savedArticles, setSavedArticles] = useState(() =>
+    getStoredArticles(articles),
+  );
+
+  useEffect(() => {
+    localStorage.setItem(
+      savedArticlesStorageKey,
+      JSON.stringify(savedArticles),
+    );
+  }, [savedArticles]);
 
   function handleOpenLogin() {
     setActiveModal("login");
@@ -96,11 +170,59 @@ function App() {
 
   function handleLoginSubmit(event) {
     event.preventDefault();
+
+    const user = registeredUser || simulatedUser;
+
+    localStorage.setItem(tokenStorageKey, "simulated-token");
+    localStorage.setItem(userStorageKey, JSON.stringify(user));
+
+    setCurrentUser(user);
+    handleCloseModal();
   }
 
-  function handleRegisterSubmit(event) {
-    event.preventDefault();
+  function handleSignOut() {
+    localStorage.removeItem(tokenStorageKey);
+    localStorage.removeItem(userStorageKey);
+    setCurrentUser(null);
+  }
+
+  function handleRegisterSubmit(formValues) {
+    const newUser = {
+      name: formValues.username,
+      email: formValues.email,
+    };
+
+    localStorage.setItem(registeredUserStorageKey, JSON.stringify(newUser));
+
+    setRegisteredUser(newUser);
     setActiveModal("success");
+  }
+
+  function handleDeleteArticle(articleId) {
+    setSavedArticles((currentArticles) =>
+      currentArticles.filter((article) => article.id !== articleId),
+    );
+  }
+
+  function handleSaveArticle(article) {
+    if (!isLoggedIn) {
+      handleOpenLogin();
+      return;
+    }
+
+    setSavedArticles((currentArticles) => {
+      const isAlreadySaved = currentArticles.some(
+        (savedArticle) => savedArticle.id === article.id,
+      );
+
+      if (isAlreadySaved) {
+        return currentArticles.filter(
+          (savedArticle) => savedArticle.id !== article.id,
+        );
+      }
+
+      return [...currentArticles, article];
+    });
   }
 
   return (
@@ -110,9 +232,17 @@ function App() {
           path="/"
           element={
             <>
-              <Header onSignInClick={handleOpenLogin} />
+              <Header
+                onSignInClick={handleOpenLogin}
+                onSignOutClick={handleSignOut}
+                isLoggedIn={isLoggedIn}
+                userName={currentUser?.name}
+              />
               <Main
                 articles={articles}
+                savedArticles={savedArticles}
+                isLoggedIn={isLoggedIn}
+                onSaveArticle={handleSaveArticle}
                 isLoading={isLoading}
                 searchError={searchError}
                 hasSearched={hasSearched}
@@ -121,7 +251,21 @@ function App() {
             </>
           }
         />
-        <Route path="/saved-news" element={<SavedNews articles={articles} />} />
+        <Route
+          path="/saved-news"
+          element={
+            isLoggedIn ? (
+              <SavedNews
+                articles={savedArticles}
+                userName={currentUser.name}
+                onSignOutClick={handleSignOut}
+                onDeleteArticle={handleDeleteArticle}
+              />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
       </Routes>
 
       {activeModal === "login" && (

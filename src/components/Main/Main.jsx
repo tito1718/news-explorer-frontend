@@ -5,7 +5,15 @@ import NothingFound from "../NothingFound/NothingFound.jsx";
 import Preloader from "../Preloader/Preloader.jsx";
 import "./Main.css";
 
-function Main({ articles, isLoading, searchError, hasSearched }) {
+function Main({
+  articles,
+  savedArticles,
+  isLoggedIn,
+  onSaveArticle,
+  isLoading,
+  searchError,
+  hasSearched,
+}) {
   return (
     <main className="main">
       {isLoading && <Preloader />}
@@ -17,7 +25,12 @@ function Main({ articles, isLoading, searchError, hasSearched }) {
       )}
 
       {!isLoading && !searchError && articles.length > 0 && (
-        <NewsCardList articles={articles} />
+        <NewsCardList
+          articles={articles}
+          savedArticles={savedArticles}
+          isLoggedIn={isLoggedIn}
+          onSaveArticle={onSaveArticle}
+        />
       )}
 
       <About />

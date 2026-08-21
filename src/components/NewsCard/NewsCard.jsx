@@ -1,6 +1,13 @@
 import "./NewsCard.css";
 
-function NewsCard({ article, isSaved = false }) {
+function NewsCard({
+  article,
+  isSaved = false,
+  isBookmarked = false,
+  isLoggedIn = false,
+  onSaveArticle,
+  onDeleteArticle,
+}) {
   return (
     <article className="news-card">
       <div className="news-card__image-container">
@@ -25,15 +32,31 @@ function NewsCard({ article, isSaved = false }) {
                 className="news-card__delete-button"
                 type="button"
                 aria-label={`Remove ${article.title} from saved articles`}
+                onClick={() => onDeleteArticle(article.id)}
               />
             </div>
           </>
         ) : (
-          <button
-            className="news-card__save-button"
-            type="button"
-            aria-label={`Save ${article.title}`}
-          />
+          <>
+            <button
+              className={`news-card__save-button ${
+                isBookmarked ? "news-card__save-button_marked" : ""
+              }`.trim()}
+              type="button"
+              aria-label={
+                isBookmarked
+                  ? `Remove ${article.title} from saved articles`
+                  : `Save ${article.title}`
+              }
+              onClick={() => onSaveArticle(article)}
+            />
+
+            {!isLoggedIn && (
+              <span className="news-card__save-tooltip">
+                Sign in to save articles
+              </span>
+            )}
+          </>
         )}
       </div>
 

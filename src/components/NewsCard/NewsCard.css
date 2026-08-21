@@ -53,6 +53,32 @@
   background-image: url("../../assets/bookmark-marked.svg");
 }
 
+.news-card__save-tooltip {
+  position: absolute;
+  top: 24px;
+  right: 72px;
+  max-width: calc(100% - 96px);
+  padding: 8px 12px;
+  border-radius: 10px;
+  background-color: #fff;
+  color: #1a1b22;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  visibility: hidden;
+  white-space: nowrap;
+}
+
+.news-card__save-button:hover + .news-card__save-tooltip,
+.news-card__save-button:focus-visible + .news-card__save-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
 .news-card__keyword {
   position: absolute;
   top: 24px;
@@ -201,6 +227,11 @@
     right: 8px;
   }
 
+  .news-card__save-tooltip {
+    top: 8px;
+    right: 56px;
+  }
+
   .news-card__keyword {
     top: 8px;
     left: 8px;
@@ -238,6 +269,11 @@
 
   .news-card__image-container {
     height: 196px;
+  }
+
+  .news-card__save-tooltip {
+    top: 16px;
+    right: 72px;
   }
 
   .news-card__keyword {

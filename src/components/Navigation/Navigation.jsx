@@ -8,7 +8,7 @@ function Navigation({
   onSignInClick,
   onSignOutClick,
   isLoggedIn = false,
-  userName = "Elise",
+  userName = "User",
   theme = "dark",
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

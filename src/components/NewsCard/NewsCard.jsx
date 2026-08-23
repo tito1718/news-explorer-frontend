@@ -32,7 +32,7 @@ function NewsCard({
                 className="news-card__delete-button"
                 type="button"
                 aria-label={`Remove ${article.title} from saved articles`}
-                onClick={() => onDeleteArticle(article.id)}
+                onClick={() => onDeleteArticle(article.url)}
               />
             </div>
           </>
@@ -51,11 +51,13 @@ function NewsCard({
               onClick={() => onSaveArticle(article)}
             />
 
-            {!isLoggedIn && (
-              <span className="news-card__save-tooltip">
-                Sign in to save articles
-              </span>
-            )}
+            <span className="news-card__save-tooltip">
+              {!isLoggedIn
+                ? "Sign in to save articles"
+                : isBookmarked
+                  ? "Remove from saved"
+                  : "Save article"}
+            </span>
           </>
         )}
       </div>

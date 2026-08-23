@@ -7,6 +7,8 @@ import articleMoose from "../../assets/article-moose.jpg";
 import articleYellowstone from "../../assets/article-yellowstone.jpg";
 import articlePolaris from "../../assets/article-polaris.jpg";
 
+import { getNews } from "../../utils/newsApi.js";
+
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
 import SavedNews from "../SavedNews/SavedNews.jsx";
@@ -76,14 +78,19 @@ function getRegisteredUser() {
 
 function App() {
   const [activeModal, setActiveModal] = useState(null);
-  const [currentUser, setCurrentUser] = useState(getStoredUser);
-  const [registeredUser, setRegisteredUser] = useState(getRegisteredUser);
-  const isLoggedIn = currentUser !== null;
-  const [isLoading] = useState(false);
-  const [searchError] = useState(false);
-  const [hasSearched] = useState(true);
 
-  const [articles] = useState([
+  const [registeredUser, setRegisteredUser] = useState(getRegisteredUser);
+  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const isLoggedIn = currentUser !== null;
+
+  const [searchResetKey, setSearchResetKey] = useState(0);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchError, setSearchError] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const [exampleArticles] = useState([
     {
       id: 1,
       image: articleDog,
@@ -145,8 +152,10 @@ function App() {
       url: "https://www.treehugger.com/",
     },
   ]);
+  const [articles, setArticles] = useState([]);
+
   const [savedArticles, setSavedArticles] = useState(() =>
-    getStoredArticles(articles),
+    getStoredArticles(exampleArticles),
   );
 
   useEffect(() => {
@@ -155,6 +164,42 @@ function App() {
       JSON.stringify(savedArticles),
     );
   }, [savedArticles]);
+
+  async function handleSearch(keyword) {
+    setSearchKeyword(keyword);
+
+    setIsLoading(true);
+    setSearchError(false);
+    setHasSearched(true);
+
+    try {
+      const data = await getNews(keyword);
+
+      const formattedArticles = (data.articles || []).map((article, index) => ({
+        id: `${article.url}-${index}`,
+        image: article.urlToImage,
+        keyword,
+        publishedAt: article.publishedAt,
+        date: new Date(article.publishedAt).toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric",
+        }),
+        title: article.title,
+        description: article.description || "No description available.",
+        source: article.source?.name || "Unknown source",
+        url: article.url,
+      }));
+
+      setArticles(formattedArticles);
+    } catch (error) {
+      console.error("News search failed:", error);
+      setArticles([]);
+      setSearchError(true);
+    } finally {
+      setIsLoading(false);
+    }
+  }
 
   function handleOpenLogin() {
     setActiveModal("login");
@@ -183,7 +228,13 @@ function App() {
   function handleSignOut() {
     localStorage.removeItem(tokenStorageKey);
     localStorage.removeItem(userStorageKey);
+
     setCurrentUser(null);
+    setArticles([]);
+    setHasSearched(false);
+    setSearchError(false);
+    setSearchKeyword("");
+    setSearchResetKey((currentKey) => currentKey + 1);
   }
 
   function handleRegisterSubmit(formValues) {
@@ -198,9 +249,9 @@ function App() {
     setActiveModal("success");
   }
 
-  function handleDeleteArticle(articleId) {
+  function handleDeleteArticle(articleUrl) {
     setSavedArticles((currentArticles) =>
-      currentArticles.filter((article) => article.id !== articleId),
+      currentArticles.filter((article) => article.url !== articleUrl),
     );
   }
 
@@ -212,12 +263,12 @@ function App() {
 
     setSavedArticles((currentArticles) => {
       const isAlreadySaved = currentArticles.some(
-        (savedArticle) => savedArticle.id === article.id,
+        (savedArticle) => savedArticle.url === article.url,
       );
 
       if (isAlreadySaved) {
         return currentArticles.filter(
-          (savedArticle) => savedArticle.id !== article.id,
+          (savedArticle) => savedArticle.url !== article.url,
         );
       }
 
@@ -237,6 +288,9 @@ function App() {
                 onSignOutClick={handleSignOut}
                 isLoggedIn={isLoggedIn}
                 userName={currentUser?.name}
+                searchResetKey={searchResetKey}
+                searchKeyword={searchKeyword}
+                onSearch={handleSearch}
               />
               <Main
                 articles={articles}

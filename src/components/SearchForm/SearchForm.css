@@ -27,6 +27,16 @@
   outline-offset: 2px;
 }
 
+.search-form__error {
+  position: absolute;
+  top: 68px;
+  left: 24px;
+  color: #ff0000;
+  font-family: "Roboto", Arial, sans-serif;
+  font-size: 12px;
+  line-height: 14px;
+}
+
 .search-form__button {
   position: absolute;
   top: 0;
@@ -69,6 +79,10 @@
     padding-right: 184px;
   }
 
+  .search-form__error {
+    top: 60px;
+  }
+
   .search-form__button {
     width: 160px;
     height: 56px;
@@ -87,6 +101,11 @@
   .search-form__input {
     height: 56px;
     padding: 0 16px;
+  }
+
+  .search-form__error {
+    top: 58px;
+    left: 16px;
   }
 
   .search-form__button {

@@ -137,13 +137,17 @@
   line-height: 24px;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+  visibility: hidden;
   white-space: nowrap;
 }
 
 .news-card__delete-control:hover .news-card__delete-tooltip,
 .news-card__delete-control:focus-within .news-card__delete-tooltip {
   opacity: 1;
+  visibility: visible;
 }
 
 .news-card__content {

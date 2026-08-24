@@ -241,13 +241,13 @@
     left: 8px;
   }
 
+  .news-card__delete-tooltip {
+    display: none;
+  }
+
   .news-card__delete-control {
     top: 8px;
     right: 8px;
-  }
-
-  .news-card__delete-tooltip {
-    display: none;
   }
 
   .news-card__content {

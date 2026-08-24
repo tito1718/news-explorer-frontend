@@ -63,6 +63,18 @@ function Navigation({
     };
   }, [isMenuOpen]);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   return (
     <nav
       className={`navigation ${
@@ -87,7 +99,7 @@ function Navigation({
       <div className="navigation__links">
         <NavLink
           className={({ isActive }) =>
-            `navigation__link ${
+            `navigation__link navigation__link_home ${
               isActive ? "navigation__link_active" : ""
             }`.trim()
           }
@@ -101,7 +113,7 @@ function Navigation({
         {isLoggedIn && (
           <NavLink
             className={({ isActive }) =>
-              `navigation__link ${
+              `navigation__link navigation__link_saved ${
                 isActive ? "navigation__link_active" : ""
               }`.trim()
             }
@@ -122,7 +134,13 @@ function Navigation({
             <span>{userName}</span>
             <img
               className="navigation__logout-icon"
-              src={theme === "light" ? logoutIcon : logoutWhiteIcon}
+              src={
+                isMenuOpen
+                  ? logoutWhiteIcon
+                  : theme === "light"
+                    ? logoutIcon
+                    : logoutWhiteIcon
+              }
               alt=""
               aria-hidden="true"
             />

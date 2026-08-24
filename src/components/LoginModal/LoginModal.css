@@ -23,6 +23,12 @@
   line-height: 17px;
 }
 
+.login-modal__input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #fff inset;
+  -webkit-text-fill-color: #000;
+  caret-color: #000;
+}
+
 .login-modal__input::placeholder {
   color: rgb(0 0 0 / 20%);
 }

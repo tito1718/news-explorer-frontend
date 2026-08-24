@@ -1,5 +1,9 @@
 import "./NewsCard.css";
 
+function stripHtmlTags(text = "") {
+  return text.replace(/<[^>]*>/g, "");
+}
+
 function NewsCard({
   article,
   isSaved = false,
@@ -78,7 +82,9 @@ function NewsCard({
           </a>
         </h3>
 
-        <p className="news-card__description">{article.description}</p>
+        <p className="news-card__description">
+          {stripHtmlTags(article.description)}
+        </p>
 
         <p className="news-card__source">{article.source}</p>
       </div>

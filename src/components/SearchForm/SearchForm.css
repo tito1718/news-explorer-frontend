@@ -18,6 +18,12 @@
   line-height: 22px;
 }
 
+.search-form__input:-webkit-autofill {
+  box-shadow: 0 0 0 1000px #fff inset;
+  -webkit-text-fill-color: #1a1b22;
+  caret-color: #1a1b22;
+}
+
 .search-form__input::placeholder {
   color: #b6bcbf;
 }

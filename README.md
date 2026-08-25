@@ -4,7 +4,7 @@ NewsExplorer is a responsive React application that allows users to search for r
 
 ## Project links
 
-- **Live application:** Deployment link will be added after deployment
+- **Live application:** [Open NewsExplorer](https://tito-wtwr.crabdance.com/news-explorer/)
 - **Repository:** [View the project on GitHub](https://github.com/tito1718/news-explorer-frontend)
 
 ## Features

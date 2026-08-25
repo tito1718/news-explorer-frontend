@@ -33,7 +33,7 @@ function NewsCardList({
       <div className="news-card-list__grid">
         {visibleArticles.map((article) => (
           <NewsCard
-            key={article.url}
+            key={article.id}
             article={article}
             isSaved={isSavedList}
             isBookmarked={

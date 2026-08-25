@@ -249,9 +249,9 @@ function App() {
     setActiveModal("success");
   }
 
-  function handleDeleteArticle(articleUrl) {
+  function handleDeleteArticle(articleId) {
     setSavedArticles((currentArticles) =>
-      currentArticles.filter((article) => article.url !== articleUrl),
+      currentArticles.filter((article) => article.id !== articleId),
     );
   }
 

@@ -36,7 +36,7 @@ function NewsCard({
                 className="news-card__delete-button"
                 type="button"
                 aria-label={`Remove ${article.title} from saved articles`}
-                onClick={() => onDeleteArticle(article.url)}
+                onClick={() => onDeleteArticle(article.id)}
               />
             </div>
           </>

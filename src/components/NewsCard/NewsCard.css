@@ -250,6 +250,11 @@
   .news-card__save-tooltip {
     top: 56px;
     right: 8px;
+    width: max-content;
+    max-width: calc(100% - 16px);
+    box-sizing: border-box;
+    text-align: center;
+    white-space: normal;
   }
 
   .news-card__keyword {

@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import CurrentUserContext from "../../contexts/CurrentUserContext.js";
 import Navigation from "../Navigation/Navigation.jsx";
 import NewsCardList from "../NewsCardList/NewsCardList.jsx";
 import Footer from "../Footer/Footer.jsx";
@@ -24,18 +26,15 @@ function getKeywordSummary(articles) {
   return `${keywords[0]}, ${keywords[1]}, and ${remainingCount} ${remainingLabel}`;
 }
 
-function SavedNews({ articles, userName, onSignOutClick, onDeleteArticle }) {
+function SavedNews({ articles, onSignOutClick, onDeleteArticle }) {
+  const currentUser = useContext(CurrentUserContext);
+  const userName = currentUser?.name || "User";
   const keywordSummary = getKeywordSummary(articles);
   const articleLabel = articles.length === 1 ? "article" : "articles";
 
   return (
     <div className="saved-news-page">
-      <Navigation
-        isLoggedIn
-        userName={userName}
-        theme="light"
-        onSignOutClick={onSignOutClick}
-      />
+      <Navigation theme="light" onSignOutClick={onSignOutClick} />
 
       <main className="saved-news">
         <section

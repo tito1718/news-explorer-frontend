@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Navigate, Route, Routes } from "react-router";
+import { Route, Routes } from "react-router";
 
 import articleDog from "../../assets/article-dog.jpg";
 import articleLake from "../../assets/article-lake.jpg";
@@ -10,9 +10,12 @@ import articlePolaris from "../../assets/article-polaris.jpg";
 import { getNews } from "../../utils/newsApi.js";
 import { getCurrentUser, login, register } from "../../utils/mainApi.js";
 
+import CurrentUserContext from "../../contexts/CurrentUserContext.js";
+
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
 import SavedNews from "../SavedNews/SavedNews.jsx";
+import ProtectedRoute from "../ProtectedRoute/ProtectedRoute.jsx";
 import Footer from "../Footer/Footer.jsx";
 
 import LoginModal from "../LoginModal/LoginModal.jsx";
@@ -22,25 +25,8 @@ import RegistrationSuccessModal from "../RegistrationSuccessModal/RegistrationSu
 import "./App.css";
 
 const tokenStorageKey = "newsExplorerToken";
-const userStorageKey = "newsExplorerUser";
+const legacyUserStorageKey = "newsExplorerUser";
 const savedArticlesStorageKey = "newsExplorerSavedArticles";
-
-function getStoredUser() {
-  const savedToken = localStorage.getItem(tokenStorageKey);
-  const savedUser = localStorage.getItem(userStorageKey);
-
-  if (!savedToken || !savedUser) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(savedUser);
-  } catch {
-    localStorage.removeItem(tokenStorageKey);
-    localStorage.removeItem(userStorageKey);
-    return null;
-  }
-}
 
 function getStoredArticles(defaultArticles) {
   const storedArticles = localStorage.getItem(savedArticlesStorageKey);
@@ -60,7 +46,10 @@ function getStoredArticles(defaultArticles) {
 function App() {
   const [activeModal, setActiveModal] = useState(null);
 
-  const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isCheckingToken, setIsCheckingToken] = useState(() =>
+    Boolean(localStorage.getItem(tokenStorageKey)),
+  );
   const [authError, setAuthError] = useState("");
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const isLoggedIn = currentUser !== null;
@@ -141,6 +130,40 @@ function App() {
   );
 
   useEffect(() => {
+    const token = localStorage.getItem(tokenStorageKey);
+
+    localStorage.removeItem(legacyUserStorageKey);
+
+    if (!token) {
+      return undefined;
+    }
+
+    let isActive = true;
+
+    getCurrentUser(token)
+      .then((user) => {
+        if (isActive) {
+          setCurrentUser(user);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          localStorage.removeItem(tokenStorageKey);
+          setCurrentUser(null);
+        }
+      })
+      .finally(() => {
+        if (isActive) {
+          setIsCheckingToken(false);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem(
       savedArticlesStorageKey,
       JSON.stringify(savedArticles),
@@ -215,7 +238,7 @@ function App() {
       const user = await getCurrentUser(token);
 
       localStorage.setItem(tokenStorageKey, token);
-      localStorage.setItem(userStorageKey, JSON.stringify(user));
+      localStorage.removeItem(legacyUserStorageKey);
 
       setCurrentUser(user);
       handleCloseModal();
@@ -228,7 +251,7 @@ function App() {
 
   function handleSignOut() {
     localStorage.removeItem(tokenStorageKey);
-    localStorage.removeItem(userStorageKey);
+    localStorage.removeItem(legacyUserStorageKey);
 
     setCurrentUser(null);
     setArticles([]);
@@ -284,81 +307,83 @@ function App() {
     });
   }
 
+  if (isCheckingToken) {
+    return null;
+  }
+
   return (
-    <div className="page">
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <>
-              <Header
-                onSignInClick={handleOpenLogin}
-                onSignOutClick={handleSignOut}
-                isLoggedIn={isLoggedIn}
-                userName={currentUser?.name}
-                searchResetKey={searchResetKey}
-                searchKeyword={searchKeyword}
-                onSearch={handleSearch}
-              />
-              <Main
-                articles={articles}
-                savedArticles={savedArticles}
-                isLoggedIn={isLoggedIn}
-                onSaveArticle={handleSaveArticle}
-                isLoading={isLoading}
-                searchError={searchError}
-                hasSearched={hasSearched}
-              />
-              <Footer />
-            </>
-          }
-        />
-        <Route
-          path="/saved-news"
-          element={
-            isLoggedIn ? (
-              <SavedNews
-                articles={savedArticles}
-                userName={currentUser.name}
-                onSignOutClick={handleSignOut}
-                onDeleteArticle={handleDeleteArticle}
-              />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
-      </Routes>
+    <CurrentUserContext.Provider value={currentUser}>
+      <div className="page">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <Header
+                  onSignInClick={handleOpenLogin}
+                  onSignOutClick={handleSignOut}
+                  searchResetKey={searchResetKey}
+                  searchKeyword={searchKeyword}
+                  onSearch={handleSearch}
+                />
+                <Main
+                  articles={articles}
+                  savedArticles={savedArticles}
+                  isLoggedIn={isLoggedIn}
+                  onSaveArticle={handleSaveArticle}
+                  isLoading={isLoading}
+                  searchError={searchError}
+                  hasSearched={hasSearched}
+                />
+                <Footer />
+              </>
+            }
+          />
 
-      {activeModal === "login" && (
-        <LoginModal
-          onClose={handleCloseModal}
-          onSubmit={handleLoginSubmit}
-          onSwitchModal={handleOpenRegister}
-          onClearError={clearAuthError}
-          isSubmitting={isAuthSubmitting}
-          serverError={authError}
-        />
-      )}
+          <Route
+            path="/saved-news"
+            element={
+              <ProtectedRoute>
+                <SavedNews
+                  articles={savedArticles}
+                  onSignOutClick={handleSignOut}
+                  onDeleteArticle={handleDeleteArticle}
+                />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-      {activeModal === "register" && (
-        <RegisterModal
-          onClose={handleCloseModal}
-          onSubmit={handleRegisterSubmit}
-          onSwitchModal={handleOpenLogin}
-          onClearError={clearAuthError}
-          isSubmitting={isAuthSubmitting}
-          serverError={authError}
-        />
-      )}
+        {activeModal === "login" && (
+          <LoginModal
+            onClose={handleCloseModal}
+            onSubmit={handleLoginSubmit}
+            onSwitchModal={handleOpenRegister}
+            onClearError={clearAuthError}
+            isSubmitting={isAuthSubmitting}
+            serverError={authError}
+          />
+        )}
 
-      {activeModal === "success" && (
-        <RegistrationSuccessModal
-          onClose={handleCloseModal}
-          onSignInClick={handleOpenLogin}
-        />
-      )}
-    </div>
+        {activeModal === "register" && (
+          <RegisterModal
+            onClose={handleCloseModal}
+            onSubmit={handleRegisterSubmit}
+            onSwitchModal={handleOpenLogin}
+            onClearError={clearAuthError}
+            isSubmitting={isAuthSubmitting}
+            serverError={authError}
+          />
+        )}
+
+        {activeModal === "success" && (
+          <RegistrationSuccessModal
+            onClose={handleCloseModal}
+            onSignInClick={handleOpenLogin}
+          />
+        )}
+      </div>
+    </CurrentUserContext.Provider>
   );
 }
 

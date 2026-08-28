@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, NavLink } from "react-router";
+
+import CurrentUserContext from "../../contexts/CurrentUserContext.js";
 import logoutIcon from "../../assets/logout.svg";
 import logoutWhiteIcon from "../../assets/logout-white.svg";
 import "./Navigation.css";
 
-function Navigation({
-  onSignInClick,
-  onSignOutClick,
-  isLoggedIn = false,
-  userName = "User",
-  theme = "dark",
-}) {
+function Navigation({ onSignInClick, onSignOutClick, theme = "dark" }) {
+  const currentUser = useContext(CurrentUserContext);
+  const isLoggedIn = currentUser !== null;
+  const userName = currentUser?.name || "User";
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   function handleMenuToggle() {

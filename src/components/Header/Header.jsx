@@ -5,8 +5,6 @@ import "./Header.css";
 function Header({
   onSignInClick,
   onSignOutClick,
-  isLoggedIn,
-  userName,
   onSearch,
   searchResetKey,
   searchKeyword,
@@ -16,8 +14,6 @@ function Header({
       <Navigation
         onSignInClick={onSignInClick}
         onSignOutClick={onSignOutClick}
-        isLoggedIn={isLoggedIn}
-        userName={userName}
       />
 
       <div className="header__content">

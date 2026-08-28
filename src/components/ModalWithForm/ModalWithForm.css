@@ -76,3 +76,8 @@
   outline: 2px solid #2f71e5;
   outline-offset: 2px;
 }
+
+.modal__alternative-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

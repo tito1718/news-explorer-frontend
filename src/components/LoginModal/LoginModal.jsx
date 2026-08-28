@@ -8,20 +8,40 @@ const initialValues = {
   password: "",
 };
 
-function LoginModal({ onClose, onSubmit, onSwitchModal }) {
+function LoginModal({
+  onClose,
+  onSubmit,
+  onSwitchModal,
+  onClearError,
+  isSubmitting,
+  serverError,
+}) {
   const { values, errors, isValid, handleChange } =
     useFormWithValidation(initialValues);
+
+  function handleInputChange(event) {
+    handleChange(event);
+    onClearError();
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault();
+    onSubmit(values);
+  }
 
   return (
     <ModalWithForm
       name="login"
       title="Sign in"
       buttonText="Sign in"
+      loadingButtonText="Signing in..."
       isValid={isValid}
+      isSubmitting={isSubmitting}
+      serverError={serverError}
       alternativeText="or"
       alternativeButtonText="Sign up"
       onClose={onClose}
-      onSubmit={onSubmit}
+      onSubmit={handleSubmit}
       onAlternativeClick={onSwitchModal}
     >
       <label className="login-modal__label" htmlFor="login-email">
@@ -38,7 +58,7 @@ function LoginModal({ onClose, onSubmit, onSwitchModal }) {
         autoComplete="email"
         required
         aria-describedby="login-email-error"
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <FormError id="login-email-error" message={errors.email} />
@@ -58,7 +78,7 @@ function LoginModal({ onClose, onSubmit, onSwitchModal }) {
         required
         minLength="8"
         aria-describedby="login-password-error"
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <FormError id="login-password-error" message={errors.password} />

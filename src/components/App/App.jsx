@@ -8,6 +8,7 @@ import articleYellowstone from "../../assets/article-yellowstone.jpg";
 import articlePolaris from "../../assets/article-polaris.jpg";
 
 import { getNews } from "../../utils/newsApi.js";
+import { getCurrentUser, login, register } from "../../utils/mainApi.js";
 
 import Header from "../Header/Header.jsx";
 import Main from "../Main/Main.jsx";
@@ -20,11 +21,6 @@ import RegistrationSuccessModal from "../RegistrationSuccessModal/RegistrationSu
 
 import "./App.css";
 
-const simulatedUser = {
-  name: "Tito",
-};
-
-const registeredUserStorageKey = "newsExplorerRegisteredUser";
 const tokenStorageKey = "newsExplorerToken";
 const userStorageKey = "newsExplorerUser";
 const savedArticlesStorageKey = "newsExplorerSavedArticles";
@@ -61,26 +57,12 @@ function getStoredArticles(defaultArticles) {
   }
 }
 
-function getRegisteredUser() {
-  const savedRegisteredUser = localStorage.getItem(registeredUserStorageKey);
-
-  if (!savedRegisteredUser) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(savedRegisteredUser);
-  } catch {
-    localStorage.removeItem(registeredUserStorageKey);
-    return null;
-  }
-}
-
 function App() {
   const [activeModal, setActiveModal] = useState(null);
 
-  const [registeredUser, setRegisteredUser] = useState(getRegisteredUser);
   const [currentUser, setCurrentUser] = useState(getStoredUser);
+  const [authError, setAuthError] = useState("");
+  const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const isLoggedIn = currentUser !== null;
 
   const [searchResetKey, setSearchResetKey] = useState(0);
@@ -201,28 +183,47 @@ function App() {
     }
   }
 
+  function clearAuthError() {
+    setAuthError("");
+  }
+
   function handleOpenLogin() {
+    clearAuthError();
     setActiveModal("login");
   }
 
   function handleOpenRegister() {
+    clearAuthError();
     setActiveModal("register");
   }
 
   function handleCloseModal() {
+    clearAuthError();
     setActiveModal(null);
   }
 
-  function handleLoginSubmit(event) {
-    event.preventDefault();
+  async function handleLoginSubmit(formValues) {
+    setIsAuthSubmitting(true);
+    clearAuthError();
 
-    const user = registeredUser || simulatedUser;
+    try {
+      const { token } = await login({
+        email: formValues.email,
+        password: formValues.password,
+      });
 
-    localStorage.setItem(tokenStorageKey, "simulated-token");
-    localStorage.setItem(userStorageKey, JSON.stringify(user));
+      const user = await getCurrentUser(token);
 
-    setCurrentUser(user);
-    handleCloseModal();
+      localStorage.setItem(tokenStorageKey, token);
+      localStorage.setItem(userStorageKey, JSON.stringify(user));
+
+      setCurrentUser(user);
+      handleCloseModal();
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setIsAuthSubmitting(false);
+    }
   }
 
   function handleSignOut() {
@@ -237,16 +238,23 @@ function App() {
     setSearchResetKey((currentKey) => currentKey + 1);
   }
 
-  function handleRegisterSubmit(formValues) {
-    const newUser = {
-      name: formValues.username,
-      email: formValues.email,
-    };
+  async function handleRegisterSubmit(formValues) {
+    setIsAuthSubmitting(true);
+    clearAuthError();
 
-    localStorage.setItem(registeredUserStorageKey, JSON.stringify(newUser));
+    try {
+      await register({
+        name: formValues.username,
+        email: formValues.email,
+        password: formValues.password,
+      });
 
-    setRegisteredUser(newUser);
-    setActiveModal("success");
+      setActiveModal("success");
+    } catch (error) {
+      setAuthError(error.message);
+    } finally {
+      setIsAuthSubmitting(false);
+    }
   }
 
   function handleDeleteArticle(articleId) {
@@ -327,6 +335,9 @@ function App() {
           onClose={handleCloseModal}
           onSubmit={handleLoginSubmit}
           onSwitchModal={handleOpenRegister}
+          onClearError={clearAuthError}
+          isSubmitting={isAuthSubmitting}
+          serverError={authError}
         />
       )}
 
@@ -335,6 +346,9 @@ function App() {
           onClose={handleCloseModal}
           onSubmit={handleRegisterSubmit}
           onSwitchModal={handleOpenLogin}
+          onClearError={clearAuthError}
+          isSubmitting={isAuthSubmitting}
+          serverError={authError}
         />
       )}
 

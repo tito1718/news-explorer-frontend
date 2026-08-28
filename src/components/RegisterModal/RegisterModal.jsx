@@ -9,9 +9,21 @@ const initialValues = {
   username: "",
 };
 
-function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
+function RegisterModal({
+  onClose,
+  onSubmit,
+  onSwitchModal,
+  onClearError,
+  isSubmitting,
+  serverError,
+}) {
   const { values, errors, isValid, handleChange } =
     useFormWithValidation(initialValues);
+
+  function handleInputChange(event) {
+    handleChange(event);
+    onClearError();
+  }
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -23,7 +35,10 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
       name="register"
       title="Sign up"
       buttonText="Sign up"
+      loadingButtonText="Signing up..."
       isValid={isValid}
+      isSubmitting={isSubmitting}
+      serverError={serverError}
       alternativeText="or"
       alternativeButtonText="Sign in"
       onClose={onClose}
@@ -44,7 +59,7 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
         autoComplete="email"
         required
         aria-describedby="register-email-error"
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <FormError id="register-email-error" message={errors.email} />
@@ -64,7 +79,7 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
         required
         minLength="8"
         aria-describedby="register-password-error"
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <FormError id="register-password-error" message={errors.password} />
@@ -83,8 +98,9 @@ function RegisterModal({ onClose, onSubmit, onSwitchModal }) {
         autoComplete="username"
         required
         minLength="2"
+        maxLength="30"
         aria-describedby="register-username-error"
-        onChange={handleChange}
+        onChange={handleInputChange}
       />
 
       <FormError id="register-username-error" message={errors.username} />

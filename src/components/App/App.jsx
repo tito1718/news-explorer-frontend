@@ -51,6 +51,7 @@ function App() {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [articles, setArticles] = useState([]);
   const [savedArticles, setSavedArticles] = useState([]);
+  const [articleError, setArticleError] = useState("");
 
   useEffect(() => {
     const token = localStorage.getItem(tokenStorageKey);
@@ -134,6 +135,10 @@ function App() {
     setAuthError("");
   }
 
+  function clearArticleError() {
+    setArticleError("");
+  }
+
   function handleOpenLogin() {
     clearAuthError();
     setActiveModal("login");
@@ -184,10 +189,24 @@ function App() {
     setCurrentUser(null);
     setSavedArticles([]);
     setArticles([]);
+    setArticleError("");
     setHasSearched(false);
     setSearchError(false);
     setSearchKeyword("");
     setSearchResetKey((currentKey) => currentKey + 1);
+  }
+
+  function handleArticleRequestError(error, fallbackMessage) {
+    console.error(fallbackMessage, error);
+
+    if (error.status === 401) {
+      handleSignOut();
+      setAuthError("Your session expired. Please sign in again.");
+      setActiveModal("login");
+      return;
+    }
+
+    setArticleError(fallbackMessage);
   }
 
   async function handleRegisterSubmit(formValues) {
@@ -222,6 +241,8 @@ function App() {
       return;
     }
 
+    clearArticleError();
+
     try {
       await deleteSavedArticle(articleId, token);
 
@@ -229,7 +250,10 @@ function App() {
         currentArticles.filter((article) => article.id !== articleId),
       );
     } catch (error) {
-      console.error("Deleting saved article failed:", error);
+      handleArticleRequestError(
+        error,
+        "We couldn't remove this article. Please try again.",
+      );
     }
   }
 
@@ -245,6 +269,8 @@ function App() {
       handleSignOut();
       return;
     }
+
+    clearArticleError();
 
     const storedArticle = savedArticles.find(
       (savedArticle) => savedArticle.url === article.url,
@@ -273,7 +299,10 @@ function App() {
         normalizeSavedArticle(createdArticle),
       ]);
     } catch (error) {
-      console.error("Updating saved article failed:", error);
+      handleArticleRequestError(
+        error,
+        "We couldn't update your saved articles. Please try again.",
+      );
     }
   }
 
@@ -305,6 +334,7 @@ function App() {
                   isLoading={isLoading}
                   searchError={searchError}
                   hasSearched={hasSearched}
+                  articleError={articleError}
                 />
                 <Footer />
               </>
@@ -319,6 +349,7 @@ function App() {
                   articles={savedArticles}
                   onSignOutClick={handleSignOut}
                   onDeleteArticle={handleDeleteArticle}
+                  articleError={articleError}
                 />
               </ProtectedRoute>
             }

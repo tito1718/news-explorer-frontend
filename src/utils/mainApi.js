@@ -8,9 +8,13 @@ function checkResponse(response) {
       return data;
     }
 
-    return Promise.reject(
-      new Error(data.message || `Request failed: ${response.status}`),
+    const error = new Error(
+      data.message || `Request failed: ${response.status}`,
     );
+
+    error.status = response.status;
+
+    return Promise.reject(error);
   });
 }
 

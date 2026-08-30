@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import CurrentUserContext from "../../contexts/CurrentUserContext.js";
+import ErrorMessage from "../ErrorMessage/ErrorMessage.jsx";
 import Navigation from "../Navigation/Navigation.jsx";
 import NewsCardList from "../NewsCardList/NewsCardList.jsx";
 import Footer from "../Footer/Footer.jsx";
@@ -26,7 +27,12 @@ function getKeywordSummary(articles) {
   return `${keywords[0]}, ${keywords[1]}, and ${remainingCount} ${remainingLabel}`;
 }
 
-function SavedNews({ articles, onSignOutClick, onDeleteArticle }) {
+function SavedNews({
+  articles,
+  onSignOutClick,
+  onDeleteArticle,
+  articleError,
+}) {
   const currentUser = useContext(CurrentUserContext);
   const userName = currentUser?.name || "User";
   const keywordSummary = getKeywordSummary(articles);
@@ -54,6 +60,14 @@ function SavedNews({ articles, onSignOutClick, onDeleteArticle }) {
             </span>
           </p>
         </section>
+
+        {articleError && (
+          <ErrorMessage
+            title="Saved articles could not be updated"
+            message={articleError}
+          />
+        )}
+
         <NewsCardList
           articles={articles}
           title=""

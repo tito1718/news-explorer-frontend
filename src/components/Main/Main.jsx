@@ -14,12 +14,20 @@ function Main({
   isLoading,
   searchError,
   hasSearched,
+  articleError,
 }) {
   return (
     <main className="main">
       {isLoading && <Preloader />}
 
       {!isLoading && searchError && <ErrorMessage />}
+
+      {!isLoading && articleError && (
+        <ErrorMessage
+          title="Saved articles could not be updated"
+          message={articleError}
+        />
+      )}
 
       {!isLoading && !searchError && hasSearched && articles.length === 0 && (
         <NothingFound />

@@ -17,13 +17,13 @@ function About() {
 
         <p className="about__description">
           Hi, I&apos;m Cesar &quot;Tito&quot; Chirino, a software engineering
-          student at TripleTen. I designed NewsExplorer as a full-stack
+          graduate of TripleTen. I developed NewsExplorer as a full-stack
           application using React, JavaScript, Node.js, Express, and MongoDB.
         </p>
 
         <p className="about__description">
           NewsExplorer allows users to search for recent news articles and save
-          their favorites. Building it is helping me strengthen my skills in
+          their favorites. Building this project strengthened my skills in
           responsive design, reusable components, third-party APIs,
           authentication, and database development.
         </p>

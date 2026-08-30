@@ -13,6 +13,7 @@ function NewsCardList({
   isLoggedIn = false,
   onSaveArticle,
   onDeleteArticle,
+  onArticleImageError,
 }) {
   const [visibleCount, setVisibleCount] = useState(articlesPerPage);
 
@@ -45,6 +46,7 @@ function NewsCardList({
             isLoggedIn={isLoggedIn}
             onSaveArticle={onSaveArticle}
             onDeleteArticle={onDeleteArticle}
+            onImageError={onArticleImageError}
           />
         ))}
       </div>

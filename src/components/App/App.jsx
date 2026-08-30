@@ -1,14 +1,20 @@
 import { useEffect, useState } from "react";
 import { Route, Routes } from "react-router";
 
-import articleDog from "../../assets/article-dog.jpg";
-import articleLake from "../../assets/article-lake.jpg";
-import articleMoose from "../../assets/article-moose.jpg";
-import articleYellowstone from "../../assets/article-yellowstone.jpg";
-import articlePolaris from "../../assets/article-polaris.jpg";
-
 import { getNews } from "../../utils/newsApi.js";
-import { getCurrentUser, login, register } from "../../utils/mainApi.js";
+import {
+  deleteArticle as deleteSavedArticle,
+  getCurrentUser,
+  getSavedArticles,
+  login,
+  register,
+  saveArticle as saveSavedArticle,
+} from "../../utils/mainApi.js";
+import {
+  createArticlePayload,
+  isValidHttpUrl,
+  normalizeSavedArticle,
+} from "../../utils/articleUtils.js";
 
 import CurrentUserContext from "../../contexts/CurrentUserContext.js";
 
@@ -26,22 +32,7 @@ import "./App.css";
 
 const tokenStorageKey = "newsExplorerToken";
 const legacyUserStorageKey = "newsExplorerUser";
-const savedArticlesStorageKey = "newsExplorerSavedArticles";
-
-function getStoredArticles(defaultArticles) {
-  const storedArticles = localStorage.getItem(savedArticlesStorageKey);
-
-  if (!storedArticles) {
-    return defaultArticles;
-  }
-
-  try {
-    return JSON.parse(storedArticles);
-  } catch {
-    localStorage.removeItem(savedArticlesStorageKey);
-    return defaultArticles;
-  }
-}
+const legacySavedArticlesStorageKey = "newsExplorerSavedArticles";
 
 function App() {
   const [activeModal, setActiveModal] = useState(null);
@@ -53,86 +44,19 @@ function App() {
   const [authError, setAuthError] = useState("");
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
   const isLoggedIn = currentUser !== null;
-
   const [searchResetKey, setSearchResetKey] = useState(0);
-
   const [isLoading, setIsLoading] = useState(false);
   const [searchError, setSearchError] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-
-  const [exampleArticles] = useState([
-    {
-      id: 1,
-      image: articleDog,
-      keyword: "Nature",
-      publishedAt: "2020-11-04",
-      date: "November 4, 2020",
-      title: "Everyone Needs a Special 'Sit Spot' in Nature",
-      description:
-        'Ever since I read Richard Louv\'s influential book, "Last Child in the Woods," the idea of having a special "sit spot" has stuck with me. This advice, which Louv attributes to nature educator Jon Young, is for both adults and children to find.',
-      source: "Treehugger",
-      url: "https://www.treehugger.com/",
-    },
-    {
-      id: 2,
-      image: articleLake,
-      keyword: "Nature",
-      publishedAt: "2019-02-19",
-      date: "February 19, 2019",
-      title: "Nature makes you better",
-      description:
-        "We all know how good nature can make us feel. We have known it for millennia: the sound of the ocean, the scents of a forest, the way dappled sunlight dances through leaves.",
-      source: "National Geographic",
-      url: "https://www.nationalgeographic.com/",
-    },
-    {
-      id: 3,
-      image: articleYellowstone,
-      keyword: "Yellowstone",
-      publishedAt: "2020-10-19",
-      date: "October 19, 2020",
-      title: "Nostalgic Photos of Tourists in U.S. National Parks",
-      description:
-        "Uri and Helle Golman are National Geographic Explorers and conservation photographers who completed a project and book they call their love letter to nature.",
-      source: "National Geographic",
-      url: "https://www.nationalgeographic.com/",
-    },
-    {
-      id: 4,
-      image: articleMoose,
-      keyword: "Parks",
-      publishedAt: "2020-10-19",
-      date: "October 19, 2020",
-      title: "Grand Teton Renews Historic Crest Trail",
-      description:
-        "The linking together of the Cascade and Death Canyon trails, at their heads, took place on October 1, 1933, and marked the first step in the realization of a plan whereby the hiker will be able to visit the most scenic areas.",
-      source: "National Parks Traveler",
-      url: "https://www.nationalparkstraveler.org/",
-    },
-    {
-      id: 5,
-      image: articlePolaris,
-      keyword: "Photography",
-      publishedAt: "2020-03-16",
-      date: "March 16, 2020",
-      title: "Scientists Don't Know Why Polaris Is So Weird",
-      description:
-        "Humans have long relied on the starry sky to explore new frontiers, sail to the edge of the world, and find their way back home. Even animals look to the stars to guide them.",
-      source: "Treehugger",
-      url: "https://www.treehugger.com/",
-    },
-  ]);
   const [articles, setArticles] = useState([]);
-
-  const [savedArticles, setSavedArticles] = useState(() =>
-    getStoredArticles(exampleArticles),
-  );
+  const [savedArticles, setSavedArticles] = useState([]);
 
   useEffect(() => {
     const token = localStorage.getItem(tokenStorageKey);
 
     localStorage.removeItem(legacyUserStorageKey);
+    localStorage.removeItem(legacySavedArticlesStorageKey);
 
     if (!token) {
       return undefined;
@@ -140,16 +64,18 @@ function App() {
 
     let isActive = true;
 
-    getCurrentUser(token)
-      .then((user) => {
+    Promise.all([getCurrentUser(token), getSavedArticles(token)])
+      .then(([user, storedArticles]) => {
         if (isActive) {
           setCurrentUser(user);
+          setSavedArticles(storedArticles.map(normalizeSavedArticle));
         }
       })
       .catch(() => {
         if (isActive) {
           localStorage.removeItem(tokenStorageKey);
           setCurrentUser(null);
+          setSavedArticles([]);
         }
       })
       .finally(() => {
@@ -163,13 +89,6 @@ function App() {
     };
   }, []);
 
-  useEffect(() => {
-    localStorage.setItem(
-      savedArticlesStorageKey,
-      JSON.stringify(savedArticles),
-    );
-  }, [savedArticles]);
-
   async function handleSearch(keyword) {
     setSearchKeyword(keyword);
 
@@ -180,21 +99,26 @@ function App() {
     try {
       const data = await getNews(keyword);
 
-      const formattedArticles = (data.articles || []).map((article, index) => ({
-        id: `${article.url}-${index}`,
-        image: article.urlToImage,
-        keyword,
-        publishedAt: article.publishedAt,
-        date: new Date(article.publishedAt).toLocaleDateString("en-US", {
-          month: "long",
-          day: "numeric",
-          year: "numeric",
-        }),
-        title: article.title,
-        description: article.description || "No description available.",
-        source: article.source?.name || "Unknown source",
-        url: article.url,
-      }));
+      const formattedArticles = (data.articles || [])
+        .filter(
+          (article) =>
+            isValidHttpUrl(article.urlToImage) && isValidHttpUrl(article.url),
+        )
+        .map((article, index) => ({
+          id: `${article.url}-${index}`,
+          image: article.urlToImage,
+          keyword,
+          publishedAt: article.publishedAt,
+          date: new Date(article.publishedAt).toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+          }),
+          title: article.title,
+          description: article.description || "No description available.",
+          source: article.source?.name || "Unknown source",
+          url: article.url,
+        }));
 
       setArticles(formattedArticles);
     } catch (error) {
@@ -235,12 +159,16 @@ function App() {
         password: formValues.password,
       });
 
-      const user = await getCurrentUser(token);
+      const [user, storedArticles] = await Promise.all([
+        getCurrentUser(token),
+        getSavedArticles(token),
+      ]);
 
       localStorage.setItem(tokenStorageKey, token);
       localStorage.removeItem(legacyUserStorageKey);
 
       setCurrentUser(user);
+      setSavedArticles(storedArticles.map(normalizeSavedArticle));
       handleCloseModal();
     } catch (error) {
       setAuthError(error.message);
@@ -254,6 +182,7 @@ function App() {
     localStorage.removeItem(legacyUserStorageKey);
 
     setCurrentUser(null);
+    setSavedArticles([]);
     setArticles([]);
     setHasSearched(false);
     setSearchError(false);
@@ -280,31 +209,72 @@ function App() {
     }
   }
 
-  function handleDeleteArticle(articleId) {
-    setSavedArticles((currentArticles) =>
+  function handleArticleImageError(articleId) {
+    setArticles((currentArticles) =>
       currentArticles.filter((article) => article.id !== articleId),
     );
   }
 
-  function handleSaveArticle(article) {
+  async function handleDeleteArticle(articleId) {
+    const token = localStorage.getItem(tokenStorageKey);
+
+    if (!token) {
+      return;
+    }
+
+    try {
+      await deleteSavedArticle(articleId, token);
+
+      setSavedArticles((currentArticles) =>
+        currentArticles.filter((article) => article.id !== articleId),
+      );
+    } catch (error) {
+      console.error("Deleting saved article failed:", error);
+    }
+  }
+
+  async function handleSaveArticle(article) {
     if (!isLoggedIn) {
       handleOpenLogin();
       return;
     }
 
-    setSavedArticles((currentArticles) => {
-      const isAlreadySaved = currentArticles.some(
-        (savedArticle) => savedArticle.url === article.url,
-      );
+    const token = localStorage.getItem(tokenStorageKey);
 
-      if (isAlreadySaved) {
-        return currentArticles.filter(
-          (savedArticle) => savedArticle.url !== article.url,
+    if (!token) {
+      handleSignOut();
+      return;
+    }
+
+    const storedArticle = savedArticles.find(
+      (savedArticle) => savedArticle.url === article.url,
+    );
+
+    try {
+      if (storedArticle) {
+        await deleteSavedArticle(storedArticle.id, token);
+
+        setSavedArticles((currentArticles) =>
+          currentArticles.filter(
+            (savedArticle) => savedArticle.id !== storedArticle.id,
+          ),
         );
+
+        return;
       }
 
-      return [...currentArticles, article];
-    });
+      const createdArticle = await saveSavedArticle(
+        createArticlePayload(article),
+        token,
+      );
+
+      setSavedArticles((currentArticles) => [
+        ...currentArticles,
+        normalizeSavedArticle(createdArticle),
+      ]);
+    } catch (error) {
+      console.error("Updating saved article failed:", error);
+    }
   }
 
   if (isCheckingToken) {
@@ -331,6 +301,7 @@ function App() {
                   savedArticles={savedArticles}
                   isLoggedIn={isLoggedIn}
                   onSaveArticle={handleSaveArticle}
+                  onArticleImageError={handleArticleImageError}
                   isLoading={isLoading}
                   searchError={searchError}
                   hasSearched={hasSearched}

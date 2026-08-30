@@ -11,6 +11,7 @@ function NewsCard({
   isLoggedIn = false,
   onSaveArticle,
   onDeleteArticle,
+  onImageError,
 }) {
   return (
     <article className="news-card">
@@ -19,6 +20,7 @@ function NewsCard({
           className="news-card__image"
           src={article.image}
           alt={article.title}
+          onError={() => onImageError?.(article.id)}
         />
 
         {isSaved ? (

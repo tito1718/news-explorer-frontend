@@ -10,6 +10,7 @@ function Main({
   savedArticles,
   isLoggedIn,
   onSaveArticle,
+  onArticleImageError,
   isLoading,
   searchError,
   hasSearched,
@@ -30,6 +31,7 @@ function Main({
           savedArticles={savedArticles}
           isLoggedIn={isLoggedIn}
           onSaveArticle={onSaveArticle}
+          onArticleImageError={onArticleImageError}
         />
       )}
 

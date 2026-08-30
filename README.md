@@ -4,7 +4,7 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 
 ## Project links
 
-- **Live application:** [Open NewsExplorer](https://tito-wtwr.crabdance.com/news-explorer/)
+- **Live application:** [Open NewsExplorer](https://newsexplorer.pages.dev)
 - **Frontend repository:** [news-explorer-frontend](https://github.com/tito1718/news-explorer-frontend)
 - **Backend repository:** [news-explorer-api](https://github.com/tito1718/news-explorer-api)
 - **Backend API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
@@ -53,6 +53,7 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 - Mongoose
 - JSON Web Tokens
 - bcrypt
+- Cloudflare Pages
 - Nginx
 - PM2
 - Google Cloud
@@ -91,6 +92,8 @@ VITE_MAIN_API_URL=https://api.tito-wtwr.crabdance.com/news-explorer
 
 The `.env.local` file is excluded from Git so private configuration values are not committed to the repository.
 
+The optional `VITE_BASE_PATH` variable controls the production deployment path. Cloudflare Pages uses `/`, while the original Google Cloud deployment uses `/news-explorer/`.
+
 ### 4. Start the development server
 
 ```bash
@@ -114,7 +117,7 @@ The frontend communicates with the NewsExplorer REST API for registration, authe
 
 The backend validates requests, hashes passwords, issues JSON Web Tokens, protects private routes, and stores users and articles in MongoDB. Production CORS settings restrict browser access to approved frontend origins.
 
-Both applications are deployed on Google Cloud and served through Nginx over HTTPS.
+The frontend is deployed on Cloudflare Pages. The backend is deployed on Google Cloud and served through Nginx over HTTPS.
 
 ## Project pitch video
 

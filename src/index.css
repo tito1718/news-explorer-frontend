@@ -1,0 +1,11 @@
+@import url("./vendor/fonts.css");
+@import url("./vendor/normalize.css");
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+}

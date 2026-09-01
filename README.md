@@ -4,9 +4,9 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 
 ## Project links
 
-- **Live application:** [Open NewsExplorer](https://newsexplorer.pages.dev)
+- **Live application:** [Open NewsExplorer](https://newsexplorer.ldtp.com)
 - **Frontend repository:** [news-explorer-frontend](https://github.com/tito1718/news-explorer-frontend)
-- **Backend repository:** [news-explorer-api](https://github.com/tito1718/news-explorer-api)
+- **Backend repository:** [news-explorer-backend](https://github.com/tito1718/news-explorer-backend)
 - **Backend API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
 
 ## Features
@@ -53,7 +53,7 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 - Mongoose
 - JSON Web Tokens
 - bcrypt
-- Cloudflare Pages
+- Cloudflare Pages (backup deployment)
 - Nginx
 - PM2
 - Google Cloud
@@ -92,7 +92,7 @@ VITE_MAIN_API_URL=https://api.tito-wtwr.crabdance.com/news-explorer
 
 The `.env.local` file is excluded from Git so private configuration values are not committed to the repository.
 
-The optional `VITE_BASE_PATH` variable controls the production deployment path. Cloudflare Pages uses `/`, while the original Google Cloud deployment uses `/news-explorer/`.
+The optional `VITE_BASE_PATH` variable controls the production deployment path. The primary custom-domain deployment uses `/`, while legacy subpath deployments can use `/news-explorer/`.
 
 ### 4. Start the development server
 
@@ -117,11 +117,7 @@ The frontend communicates with the NewsExplorer REST API for registration, authe
 
 The backend validates requests, hashes passwords, issues JSON Web Tokens, protects private routes, and stores users and articles in MongoDB. Production CORS settings restrict browser access to approved frontend origins.
 
-The frontend is deployed on Cloudflare Pages. The backend is deployed on Google Cloud and served through Nginx over HTTPS.
-
-## Project pitch video
-
-[Watch the project pitch](https://www.loom.com/share/23251ea4a28740d4aec3684addb8ab80) for a demonstration of NewsExplorer and an explanation of the development process, challenges, responsible AI use, results, and possible future improvements.
+The frontend and backend are deployed on Google Cloud and served through Nginx over HTTPS. Cloudflare Pages remains available as a backup frontend deployment.
 
 ## Author
 

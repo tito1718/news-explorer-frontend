@@ -259,7 +259,7 @@ function App() {
 
   async function handleSaveArticle(article) {
     if (!isLoggedIn) {
-      handleOpenLogin();
+      handleOpenRegister();
       return;
     }
 
@@ -344,7 +344,7 @@ function App() {
           <Route
             path="/saved-news"
             element={
-              <ProtectedRoute>
+              <ProtectedRoute onUnauthorized={handleOpenLogin}>
                 <SavedNews
                   articles={savedArticles}
                   onSignOutClick={handleSignOut}

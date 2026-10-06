@@ -7,7 +7,7 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 - **Live application:** [Open NewsExplorer](https://newsexplorer.ldtp.com)
 - **Frontend repository:** [news-explorer-frontend](https://github.com/tito1718/news-explorer-frontend)
 - **Backend repository:** [news-explorer-backend](https://github.com/tito1718/news-explorer-backend)
-- **Backend API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
+- **Backend API:** [NewsExplorer API](https://apps.ldtp.com/news-explorer)
 
 ## Features
 
@@ -87,7 +87,7 @@ Create a `.env.local` file in the project root:
 
 ```env
 VITE_NEWS_API_KEY=your_news_api_key
-VITE_MAIN_API_URL=https://api.tito-wtwr.crabdance.com/news-explorer
+VITE_MAIN_API_URL=https://apps.ldtp.com/news-explorer
 ```
 
 The `.env.local` file is excluded from Git so private configuration values are not committed to the repository.

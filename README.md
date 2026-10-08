@@ -4,10 +4,11 @@ NewsExplorer is a responsive full-stack application that allows users to search 
 
 ## Project links
 
-- **Live application:** [Open NewsExplorer](https://newsexplorer.ldtp.com)
+- **Stage 3 review deployment:** [Open NewsExplorer](https://stage-3-frontend.newsexplorer.pages.dev)
+- **Custom domain:** [newsexplorer.ldtp.com](https://newsexplorer.ldtp.com)
 - **Frontend repository:** [news-explorer-frontend](https://github.com/tito1718/news-explorer-frontend)
 - **Backend repository:** [news-explorer-backend](https://github.com/tito1718/news-explorer-backend)
-- **Backend API:** [NewsExplorer API](https://api.tito-wtwr.crabdance.com/news-explorer)
+- **Backend API:** [NewsExplorer API](https://apps.ldtp.com/news-explorer)
 
 ## Features
 
@@ -86,8 +87,7 @@ npm install
 Create a `.env.local` file in the project root:
 
 ```env
-VITE_NEWS_API_KEY=your_news_api_key
-VITE_MAIN_API_URL=https://api.tito-wtwr.crabdance.com/news-explorer
+VITE_MAIN_API_URL=https://apps.ldtp.com/news-explorer
 ```
 
 The `.env.local` file is excluded from Git so private configuration values are not committed to the repository.
@@ -113,9 +113,9 @@ Open the local address displayed in the terminal, usually `http://localhost:5173
 
 ## Full-stack implementation
 
-The frontend communicates with the NewsExplorer REST API for registration, authentication, current-user retrieval, and persistent saved-article operations.
+The frontend communicates with the NewsExplorer REST API for news searches, registration, authentication, current-user retrieval, and persistent saved-article operations.
 
-The backend validates requests, hashes passwords, issues JSON Web Tokens, protects private routes, and stores users and articles in MongoDB. Production CORS settings restrict browser access to approved frontend origins.
+The backend proxies News API searches server-side using the NEWS_API_KEY environment variable, validates requests, hashes passwords, issues JSON Web Tokens, protects private routes, and stores users and articles in MongoDB. Production CORS settings restrict browser access to approved frontend origins.
 
 The frontend and backend are deployed on Google Cloud and served through Nginx over HTTPS. Cloudflare Pages remains available as a backup frontend deployment.
 

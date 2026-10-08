@@ -1,6 +1,6 @@
 const MAIN_API_URL =
   import.meta.env.VITE_MAIN_API_URL ||
-  "https://api.tito-wtwr.crabdance.com/news-explorer";
+  "https://apps.ldtp.com/news-explorer";
 
 function checkResponse(response) {
   return response.json().then((data) => {

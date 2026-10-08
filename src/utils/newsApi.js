@@ -1,8 +1,6 @@
-const NEWS_API_URL = import.meta.env.PROD
-  ? "https://nomoreparties.co/news/v2/everything"
-  : "https://newsapi.org/v2/everything";
-
-const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
+const MAIN_API_URL =
+  import.meta.env.VITE_MAIN_API_URL ||
+  "https://apps.ldtp.com/news-explorer";
 
 function checkResponse(response) {
   if (response.ok) {
@@ -28,11 +26,10 @@ export function getNews(keyword) {
 
   const parameters = new URLSearchParams({
     q: keyword,
-    apiKey: API_KEY,
     from: formatDate(previousDate),
     to: formatDate(currentDate),
     pageSize: "100",
   });
 
-  return fetch(`${NEWS_API_URL}?${parameters.toString()}`).then(checkResponse);
+  return fetch(`${MAIN_API_URL}/news?${parameters.toString()}`).then(checkResponse);
 }
